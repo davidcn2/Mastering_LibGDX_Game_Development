@@ -53,12 +53,20 @@ public class MapManager
     viewport).  We are also going to store state information regarding the player start position and the 
     current player position using the Vector2 class.
     
+    Switching from one map to another involves (focusing on positional operations):
+    1.  Check for intersection player and portal tile in updatePortalLayerActivation.
+    2.  Player intersects a portal tile (checks against objects in _portalLayer map layer).
+    3.  Call setClosestStartPositionFromScaledUnits (which executes setClosestStartPosition) to cache the
+        closest player spawn for the map being left.
+    4.  Closest player spawn locations are stored in _playerStartLocationTable (hash map).
+    5.  Call loadMap to perform core logic tied to "loading" map.
+    6.  If loading map for first time, determine player location based on spawn layer (relative to 0, 0).
+    7.  If loading map after first time, use position stored before activating portal (in 
+        _playerStartLocationTable).
+    
     Methods include:
-
-    getCollisionLayer:
-    getCurrentMap:
-    getPlayerStartUnitScaled:
-    getPortalLayer:
+    
+    isPopulatedText:  Returns whether text parameter populated -- length greater than zero (and not null).
     loadMap:  Loads and gets the passed map from the asset manager (as necessary) and sets the player 
       starting location.
     setClosestStartPosition:  Sets the player starting location to the closest position of a player object 
@@ -95,32 +103,43 @@ public class MapManager
     private HashMap<String, String> _mapTable; // Hash map containing the relative paths to the actual TMX 
       // files located under the assets directory.
     private HashMap<String, Vector2> _playerStartLocationTable; // Hash map containing the closest player 
-      // spawn point in the current loaded map.
+      // spawn point in the current loaded map, in pixels.
     
     // Declare regular variables.
     private String _currentMapName; // Name of current map.  Corresponds to key values in _mapTable.
     
     // Declare object variables.
-    private Vector2 _closestPlayerStartPosition;
-    private MapLayer _collisionLayer;
-    private Vector2 _convertedUnits;
-    private TiledMap _currentMap;
-    private Vector2 _playerStart; // Starting location of player.
-    private Vector2 _playerStartPositionRect;
-    private MapLayer _portalLayer;
-    private MapLayer _spawnsLayer;
+    private Vector2 _closestPlayerStartPosition; // Closest player position to spawn location
+    private MapLayer _collisionLayer; // Collision layer of the current Tiled map.
+    private Vector2 _convertedUnits; // Starting player location in current map, converted from tiles (units) 
+      // to pixels.
+    private TiledMap _currentMap; // Tiled object for the current map.
+    private Vector2 _playerStart; // Starting location of player (pixels).
+    private Vector2 _playerStartPositionRect; // Proposed starting locations of player, based on spawn 
+      // points (pixels).
+    private MapLayer _portalLayer; // Portal layer of the current Tiled map.
+    private MapLayer _spawnsLayer; // Entity spawning lawyer of the current Tiled map.
 
     public MapManager()
     {
         
-        // The constructor ...
+        /*
+        The constructor:
+        
+        1.  Initializes variables.
+        2.  Populates hash maps with relative paths of TiledMap files.
+        3.  Copies base starting location of player (0, 0) to related hash maps for each TiledMap.
+        */
 
         // Set defaults.
-        _playerStart = new Vector2(0, 0); // Starting location of player.
-        _collisionLayer = null;
-        _currentMap = null;
-        _portalLayer = null;
-        _spawnsLayer = null;
+        _playerStart = new Vector2(0, 0);
+        _playerStartPositionRect = new Vector2(0,0);
+        _closestPlayerStartPosition = new Vector2(0,0);
+        _convertedUnits = new Vector2(0,0);
+        _collisionLayer = null; // Clear collision layer.
+        _currentMap = null; // Clear current (Tiled) map.
+        _portalLayer = null; // Clear portal layer.
+        _spawnsLayer = null; // Clear spawn layer.
         
         // _mapTable = new Hashtable();
         // _playerStartLocationTable = new Hashtable();
@@ -138,10 +157,6 @@ public class MapManager
         _playerStartLocationTable.put(TOP_WORLD, _playerStart.cpy());
         _playerStartLocationTable.put(TOWN, _playerStart.cpy());
         _playerStartLocationTable.put(CASTLE_OF_DOOM, _playerStart.cpy());
-
-        _playerStartPositionRect = new Vector2(0,0);
-        _closestPlayerStartPosition = new Vector2(0,0);
-        _convertedUnits = new Vector2(0,0);
         
     }
 
@@ -149,34 +164,56 @@ public class MapManager
     
     public MapLayer getCollisionLayer()
     {
+        // The function returns a reference to the collision layer of the current Tiled map.
         return _collisionLayer;
     }
     
     public TiledMap getCurrentMap()
     {
         
+        // The function returns the current Tiled map object.  If not initialized yet (beginning of game),
+        // loads the TOWN map and sets the player starting location.
+        
+        // If map loaded, then...
         if ( _currentMap == null )
         {
+            
+            // No map loaded.
+            
+            // Set name of current map to global constant for TOWN.
             _currentMapName = TOWN;
+            
+            // Load the TOWN map from the asset manager and set the player starting location.
             loadMap(_currentMapName);
+            
         }
         
+        // Return a reference to the current Tiled map object.
         return _currentMap;
         
     }
     
     public MapLayer getPortalLayer()
     {
+        // The function returns a reference to the portal layer of the current Tiled map.
         return _portalLayer;
     }
     
     public Vector2 getPlayerStartUnitScaled()
     {
         
-        Vector2 playerStart;
+        // The function returns the scaled version (in tiles) of the player start location.
         
+        Vector2 playerStart; // Copy of player start location, allowing for scaling without changing original 
+        // values.
+        
+        // Copy player start location to local variable.
         playerStart = _playerStart.cpy();
+        
+        // Scale player start location from pixels to tiles.
         playerStart.set(_playerStart.x * UNIT_SCALE, _playerStart.y * UNIT_SCALE);
+        
+        // Return the scaled version of the player start location.
         return playerStart;
         
     }
@@ -209,7 +246,8 @@ public class MapManager
         
         Summary of player position:
         If loading map for first time, determine based on spawn layer.
-        If loading map for second or later time, position stored before activating portal.
+        If loading map for second or later time, use position stored before activating portal.
+        Prior positions stored in > _playerStartLocationTable.
         
         Returns true when a valid map is loaded.
         Returns false when an invalid name is passed or a map fails to load.
@@ -276,7 +314,7 @@ public class MapManager
                         Gdx.app.debug(TAG, "No collision layer!");
                     }
 
-                    // Store a reference to the portal (collision) layer.
+                    // Store a reference to the portal (specialty collision) layer.
                     _portalLayer = _currentMap.getLayers().get(MAP_PORTAL_LAYER);
 
                     // If no portal layer exists, then...
@@ -328,6 +366,12 @@ public class MapManager
                         
                         // Set starting location of player in current map.
                         _playerStart.set(start.x, start.y);
+                        
+                        /*
+                        System.out.println("loadMap...");
+                        System.out.println("_playerStart x: " + _playerStart.x + ", y: " + _playerStart.y);
+                        System.out.println("_playerStartPositionRect x: " + _playerStartPositionRect.x + ", y: " + _playerStartPositionRect.y);
+                        */
 
                     }
 
@@ -372,8 +416,21 @@ public class MapManager
     private boolean setClosestStartPosition(final Vector2 position)
     {
         
-        // The method sets the player starting location to the closest position of a player object in the 
-        // spawn layer.  The method takes a base player location with pixel coordinates as a parameter.
+        /*
+        The method sets the player starting location to the closest position of a player object in the 
+        spawn layer.  The method takes a base player location with pixel coordinates as a parameter.
+        
+        MLGD:
+        The setClosestStartPosition() method will cache the closest spawn location to the player on the 
+        current map.  This is used when the portal activation occurs in order to start the player in the 
+        correct location when transitioning out of the new location, back to the previous location.
+        
+        MLGD:
+        The method uses the dst2() method from the Vector2 class because, in general, when checking 
+        distances between objects, we only care about the relative distance, not the absolute distance. 
+        In order to get the absolute distance, we would need to take the square root of the value, and in 
+        general, this is an expensive operation.
+        */
         
         // Returns true when closest starting position found.
         // Returns false when closest starting position not found.
@@ -406,7 +463,14 @@ public class MapManager
                 // Looking at a player spawn location.
                 
                 // Store current object location in player starting rectangle.
+                // Sets values of _playerStartPositionRect vector.
                 ((RectangleMapObject)object).getRectangle().getPosition(_playerStartPositionRect);
+                
+                /*
+                System.out.println("setClosestStartPosition..." + temp);
+                System.out.println("_playerStart x: " + _playerStart.x + ", y: " + _playerStart.y);
+                System.out.println("_playerStartPositionRect x: " + _playerStartPositionRect.x + ", y: " + _playerStartPositionRect.y);
+                */
                 
                 // Store distance between base player and object locations.
                 distance = position.dst2(_playerStartPositionRect);
@@ -428,9 +492,7 @@ public class MapManager
                     
                     // Flag closest starting position as found.
                     // A closer position may be located.
-                    closestPos = true;
-                    
-                    
+                    closestPos = true;                    
                     
                 } // End ... If distance less than shortest found so far or equal to zero.
                 

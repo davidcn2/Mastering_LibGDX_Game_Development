@@ -154,10 +154,19 @@ public final class Utility
         
     }
     
+    // textureFilenamePath = Key to texture to retrieve from asset manager.  Path of texture when loaded.
     public static Texture getTextureAsset(String textureFilenamePath)
     {
         
-        // The procedure returns the specified Texture object that exists in the asset manager.
+        /*
+        The procedure returns the specified Texture object that exists in the asset manager.
+        
+        Example of textureFilenamePath = assets/sprites/characters/Warrior.png.
+        
+        The Texture object will include the entire image, consisting of one to many
+        different sprites.  In order to reference a specific sprite (for rendering), 
+        TextureRegion can be used to get access to a subregion of the Texture object.
+        */
         
         Texture texture; // Texture object to load.
 
@@ -171,7 +180,7 @@ public final class Utility
             // Texture object exists in asset manager.
             
             // Get the Texture object from the asset manager.
-            texture = ASSET_MANAGER.get(textureFilenamePath,Texture.class);
+            texture = ASSET_MANAGER.get(textureFilenamePath, Texture.class);
             
         }
         
@@ -253,7 +262,7 @@ public final class Utility
         
     }
     
-    // textureFilenamePath = Filename of image to load into Texture asset.
+    // textureFilenamePath = Filename of image to load into Texture asset.  Key of texture in asset manager.
     public static void loadTextureAsset(String textureFilenamePath)
     {
         
@@ -261,6 +270,10 @@ public final class Utility
         The loadTextureAsset() method takes an image filename path relative to the
         working directory.  The method loads the image file into the asset manager
         as a Texture asset, blocking until finished.
+        
+        The Texture object will include the entire image, consisting of one to many
+        different sprites.  In order to reference a specific sprite (for rendering), 
+        TextureRegion can be used to get access to a subregion of the Texture object.
         
         Pairs with method, getTextureAsset().
         */

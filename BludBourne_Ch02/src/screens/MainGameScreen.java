@@ -51,6 +51,14 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
     the player character moving around in them.  The MainGameScreen class represents the main gameplay 
     screen used to display the game map, player avatar, and any UI components.
 
+    1.  Initialization occurs in the constructor.
+    2.  The first appearance of the screen (and upon becoming current) cause the execution of the function, 
+        show().
+    3.  The show() function sets up the viewport, camera, orthogonal tile map renderer, player, and controller.
+    4.  During the first appearance of the screen, the reference of the show() function to 
+        mapMgr.getCurrentMap() causes the default map to load via loadMap().
+    3.  The main game logic occurs through the render() function. 
+    
     Methods include:
 
     dispose:  Clears LibGDX resources from memory.
@@ -77,12 +85,12 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
 
     // Declare object variables.
     private OrthographicCamera _camera;
-    private PlayerController _controller;
+    private PlayerController _controller; // Reference to the player input class.
     private TextureRegion _currentPlayerFrame;
     private Sprite _currentPlayerSprite;
-    private static MapManager _mapMgr;
+    private static MapManager _mapMgr; // Reference to the map manager class.
     private OrthogonalTiledMapRenderer _mapRenderer;
-    private static Entity _player;
+    private static Entity _player; // Reference to the entity class for the player.
     
     // g = Reference to base game.
     // windowWidth = Width to use for stages.
@@ -90,7 +98,15 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
     public MainGameScreen(BaseGame g, int windowWidth, int windowHeight)
     {
 
-        // The constructor ...
+        /*
+        The constructor calls the BaseScreen constructor, sets defaults, and initializes the map manager.
+        
+        Initializing the map manager involves:
+        
+        1.  Initializes variables.
+        2.  Populates hash maps with relative paths of TiledMap files.
+        3.  Copies base starting location of player (0, 0) to related hash maps for each TiledMap.
+        */
         
         // Call the constructor for the BaseScreen (parent / super) class.
         super(g, windowWidth, windowHeight);
@@ -133,13 +149,16 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
     public void show()
     {
 		
-        // The method gets called when the screen becomes the current one for a Game.
-        // The method sets up the viewport, camera, orthogonal tile map renderer, player, 
-        // and controller.
+        /*
+        The method gets called when the screen becomes the current one for a Game.  The method sets up the 
+        viewport, camera, orthogonal tile map renderer, player, and controller.
         
-        // Whenever a new screen is set with the Game class, the hide() method will be 
-        // called on the current screen, and a show() method will be called on the new 
-        // screen.
+        Whenever a new screen is set with the Game class, the hide() method will be called on the current 
+        screen, and a show() method will be called on the new screen.
+        
+        During the first appearance of the screen, the reference of the show() function to 
+        mapMgr.getCurrentMap() causes the default map to load via loadMap().
+        */
         
         // Set up the camera object, _camera.
         
@@ -158,6 +177,7 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
 
         // Instantiate Tiled Map renderer with current map and scale.
         // Scale = 1 / (square side size, in pixels).  e.g. 1 / 16 pixels = 0.0625.
+        // _mapMgr.getCurrentMap() ... Loads the TOWN map and sets the player starting location.
         _mapRenderer = new OrthogonalTiledMapRenderer(_mapMgr.getCurrentMap(), MapManager.UNIT_SCALE);
         
         // Sets the projection matrix for rendering, as well as the bounds of the map which should be rendered.
@@ -183,7 +203,7 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
         // Instantiate player object.
         _player = new Entity();
         
-        // Initialize map position properties for player.
+        // Initialize map position properties (location) for player.
         // Set current position (in terms of tiles) based on default set in Tiled map.
         // Set next position to same value.
         _player.init(_mapMgr.getPlayerStartUnitScaled().x, _mapMgr.getPlayerStartUnitScaled().y);
@@ -195,8 +215,9 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
     
     }
 
+    // delta = Time span between the current and last frame in seconds.  Passed / populated automatically.
     @Override
-    public void render(float delta) 
+    public void render(float delta)
     {
 
         /*
@@ -481,6 +502,13 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
         caching helps during the transition from the old to the new location.  Then, 
         the method loads the new map designated by the portal activation name, resetting
         the player position, and setting the new map to be rendered in the next frame.
+        
+        Summary of starting location logic:
+        1.  Caches (stores) location in current map of closest spawn point, relative to
+        player position.
+        2.  If new map not visited before, sets starting location to cloest spawn point
+        to (0, 0).
+        3.  If new map visited before, uses location stored in _playerStartLocationTable.
         
         Returns true when a collision occurs with the player hitbox and a portal.
         Returns false when no collision occurs with the player hitbox and a portal.

@@ -37,6 +37,10 @@ public class PlayerController implements InputProcessor
     
     /*
     The class implements InputProcessor and manages the player input and controls on the screen.
+    PlayerController is responsible for handling all of the input events and providing mechanisms 
+    to process the events in the queue.  InputProcessor is an interface that should be implemented
+    in order to process input events, such as mouse cursor location changes, mouse button presses, 
+    and keyboard key presses from the input event handler.
 
     Methods include:
 
@@ -124,9 +128,18 @@ public class PlayerController implements InputProcessor
 
     // Overriden methods below...
     
+    /*
+    The keyDown() and keyUp() pair of methods will process specific key presses and releases, 
+    respectively, by caching them in a Hashtable object.  The Hashtable allows for processing 
+    the input later, without losing keyboard key press or release events, and appropriately 
+    removing redundant key events from the queue.
+    */
+    
     @Override
     public boolean keyDown(int keycode)
     {
+        
+        
         
         if ( keycode == Input.Keys.LEFT || keycode == Input.Keys.A )
         {
@@ -208,6 +221,14 @@ public class PlayerController implements InputProcessor
         return false;
     }
     
+    /*
+    The touchDown() and touchUp() pair of methods will process specific mouse button
+    presses and releases, respectively, by caching the position in a Hashtable object. 
+    The Hashtable object allows for processing the input later, without losing mouse 
+    button press or release events and appropriately removing redundant mouse press 
+    events from the queue.
+    */
+    
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button)
     {
@@ -235,12 +256,6 @@ public class PlayerController implements InputProcessor
     }
 
     @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer)
-    {
-        return false;
-    }
-    
-    @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button)
     {
         
@@ -257,6 +272,12 @@ public class PlayerController implements InputProcessor
         
         return true;
         
+    }
+    
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer)
+    {
+        return false;
     }
 
     // Custom methods below...
@@ -363,9 +384,20 @@ public class PlayerController implements InputProcessor
             
     }
     
+    // delta = Time span between the current and last frame in seconds.  Passed / populated automatically.
     private void processInput(float delta)
     {
 
+        /*
+        The processInput() method is the primary business logic that drives the class.
+        During the beginning of every frame in the render loop, processInput() will
+        be called before rendering any graphics.  In the function, processing of the 
+        cached values of the keyboard and mouse input occurs.  First, calculation of 
+        the next position occurs, as explained in the previous section, in order to 
+        avoid issues with two fast-moving game objects colliding and missing a 
+        collision check.  Then, the state and direction of the player character are set.
+        */
+        
         //Keyboard input
         
         if ( keys.get(Keys.LEFT) )

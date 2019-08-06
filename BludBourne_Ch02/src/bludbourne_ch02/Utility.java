@@ -34,33 +34,35 @@ ArrayList supports dynamic arrays that can grow as needed.
 public final class Utility 
 {
     
-    /*
-    The class contains asset manager helper methods.
-    
-    MLGD (Mastering LibGDX Game Development):
-    
-    A.  The TextureLoader class represents the asset loader for textures.  One note is that
-    the texture data is loaded by default asynchronously, so make sure before you use
-    an asset with TextureLoader that it has been loaded.
-    
-    B.  The InternalFileHandleResolver class is a nice convenience class for managing file 
-    handles when resolving paths with assets relative to the current working directory.
-    
-    C.  The TiledMap class inherits from the Map class that is a generic map implementation.
-    The Map base class only contains map properties that describe general attributes and
-    map layers. The TiledMap class extends this functionality with additional fields for
-    tiles and tilesets. These tiles are stored as a 2D array of cells that contain references
-    to the tile as well as rotation and flip attributes.
-    
-    D.  The TmxMapLoader class is a convenience class for loading TMX-based tilemaps
-    and storing them as the TiledMap instances.
-    
-    E.  The AssetManager class manages the loading and storing of assets such as textures,
-    bitmap fonts, particle effects, pixmaps, UI skins, tile maps, sounds, and music.
+    /**
+    * The class contains asset manager helper methods.
+    * <br><br>
+    * MLGD (Mastering LibGDX Game Development):
+    * <br><br>
+    * A.  The TextureLoader class represents the asset loader for textures.  One note is that
+    * the texture data is loaded by default asynchronously, so make sure before you use
+    * an asset with TextureLoader that it has been loaded.
+    * <br><br>
+    * B.  The InternalFileHandleResolver class is a nice convenience class for managing file 
+    * handles when resolving paths with assets relative to the current working directory.
+    * <br><br>
+    * C.  The TiledMap class inherits from the Map class that is a generic map implementation.
+    * The Map base class only contains map properties that describe general attributes and
+    * map layers. The TiledMap class extends this functionality with additional fields for
+    * tiles and tilesets. These tiles are stored as a 2D array of cells that contain references
+    * to the tile as well as rotation and flip attributes.
+    * <br><br>
+    * D.  The TmxMapLoader class is a convenience class for loading TMX-based tilemaps
+    * and storing them as the TiledMap instances.
+    * <br><br>
+    * E.  The AssetManager class manages the loading and storing of assets such as textures,
+    * bitmap fonts, particle effects, pixmaps, UI skins, tile maps, sounds, and music.
+    */
 
+    /*
     Methods include:
 
-    getMapAsset:  Returns the specified Tiled map object that exists in the asset manager.
+    getMapAsset:  Returns the specified TiledMap object that exists in the asset manager.
     getTextureAsset:  Returns the specified Texture object that exists in the asset manager.
     isAssetLoaded:  Return a boolean value on whether the (passed) asset is currently loaded.
     isPopulatedText:  Returns whether text parameter populated -- length greater than zero (and not null).
@@ -73,20 +75,33 @@ public final class Utility
     */
     
     // Declare constants.
-    private static final String TAG = Utility.class.getSimpleName();
+    private static final String TAG = Utility.class.getSimpleName(); // Class name.
     
     // Declare object variables.
-    public static final AssetManager ASSET_MANAGER = new AssetManager(); // Loads and stores assets like 
-      // textures, bitmap fonts, tile maps, sounds, music, ...
+    
+    /** {@link AssetManager}
+     * Loads and stores assets like textures, bitmap fonts, tile maps, sounds, music, ... */
+    public static final AssetManager ASSET_MANAGER = new AssetManager();
+    
+    /** {@link InternalFileHandleResolver}
+     * Convenience object for managing file handles when resolving paths with assets relative to the current
+     * working directory. */
     private static final InternalFileHandleResolver FILE_PATH_RESOLVER =  new InternalFileHandleResolver();
-    // Convenience object for managing file handles when resolving paths with assets relative to the 
-    // current working directory.
     
     // No constructor exists.
     
     // Getters and setters below...
     
-    // Name of asset to check whether loaded in asset manager.
+    /**
+     * 
+     * The isAssetLoaded() method wraps the AssetManager method isLoaded() and will return a simple
+     * Boolean value on whether the asset is currently loaded.
+     * 
+     * @param fileName  Name of asset to check whether loaded in asset manager.
+     * @return  Whether the passed asset is currently loaded in asset manager.
+     */
+    
+    // fileName = Name of asset to check whether loaded in asset manager.
     public static boolean isAssetLoaded(String fileName)
     {
         // The isAssetLoaded() method wraps the AssetManager method isLoaded() and will return a simple
@@ -94,6 +109,13 @@ public final class Utility
         return ASSET_MANAGER.isLoaded(fileName);
     }
     
+    /**
+     * 
+     * The loadCompleted() method wraps the progress of AssetManager as a percentage of completion.
+     * This can be used to update progress meter values when loading asynchronously.
+     * 
+     * @return  Progress of AssetManager loading -- as a percentage of completion.
+     */
     public static float loadCompleted()
     {
         // The loadCompleted() method wraps the progress of AssetManager as a percentage of completion.
@@ -101,6 +123,12 @@ public final class Utility
         return ASSET_MANAGER.getProgress();
     }
     
+    /**
+     * 
+     * The numberAssetsQueued() method wraps the number of assets left to load from the AssetManager queue.
+     * 
+     * @return  Number of assets left to load from the AssetManager queue.
+     */
     public static int numberAssetsQueued()
     {
         // The numberAssetsQueued() method wraps the number of assets left to load from the AssetManager 
@@ -108,6 +136,13 @@ public final class Utility
         return ASSET_MANAGER.getQueuedAssets();
     }
     
+    /**
+     * 
+     * The updateAssetLoading() wraps the update call in AssetManager and can be called in a render() loop, 
+     * if loading assets asynchronously in order to process the preload queue.
+     * 
+     * @return  Whether finished loading assets.
+     */
     public static boolean updateAssetLoading()
     {
         // The updateAssetLoading() wraps the update call in AssetManager and can be called in a render() 
@@ -117,13 +152,21 @@ public final class Utility
     
     // Methods below...
     
+    /**
+     * 
+     * The procedure returns the specified TiledMap object that exists in the asset manager.
+     * 
+     * @param mapFilenamePath  Filename for Tiled map object to retrieve from asset manager.
+     * @return  The TiledMap object in the asset manager corresponding to the passed value in mapFilenamePath.
+     */
+    
     // mapFilenamePath = Filename for Tiled map object to retrieve from asset manager.
     public static TiledMap getMapAsset(String mapFilenamePath)
     {
         
         // The procedure returns the specified Tiled map object that exists in the asset manager.
         
-        TiledMap map; // Tiled map object to load.
+        TiledMap map; // TiledMap object to load.
 
         // Set defaults.
         map = null;
@@ -153,6 +196,20 @@ public final class Utility
         return map;
         
     }
+    
+    /**
+     * 
+     * The procedure returns the specified Texture object that exists in the asset manager.
+     * <br><br>
+     * Example of textureFilenamePath = assets/sprites/characters/Warrior.png.
+     * <br><br> 
+     * The Texture object will include the entire image, consisting of one to many
+     * different sprites.  In order to reference a specific sprite (for rendering), 
+     * TextureRegion can be used to get access to a subregion of the Texture object.
+     * 
+     * @param textureFilenamePath  Key to texture to retrieve from asset manager.  Path of texture when loaded.
+     * @return  The Texture object in the asset manager corresponding to the passed value in textureFilenamePath.
+     */
     
     // textureFilenamePath = Key to texture to retrieve from asset manager.  Path of texture when loaded.
     public static Texture getTextureAsset(String textureFilenamePath)
@@ -199,14 +256,35 @@ public final class Utility
         
     }
     
+    /**
+     * 
+     * The function returns whether text parameter populated -- length greater than zero (and not null).
+     * 
+     * @param text  Text to check whether populated.
+     * @return  Whether text parameter populated -- length greater than zero (and not null).
+     */
+    
     // text = Text to check whether populated.
     public static boolean isPopulatedText(String text)
     {
-        // Return whether text parameter populated -- length greater than zero (and not null).
+        // The function returns whether text parameter populated -- length greater than zero (and not null).
         return text != null && !text.isEmpty();
     }
     
-    // Name of tmx file (relative to working directory) to load as a TiledMap asset.
+    /**
+     * 
+     * The loadMapAsset() method will take a TMX filename path relative to the working
+     * directory.  The method loads the TMX file into the asset manager as a TiledMap 
+     * asset, blocking until finished.  We can load these assets later asynchronously 
+     * once we create a screen with a progress bar, instead of blocking on the render
+     * thread.
+     * <br><br>
+     * Pairs with method, getMapAsset().
+     * 
+     * @param mapFilenamePath  Name of tmx file (relative to working directory) to load as a TiledMap asset.
+     */
+    
+    // mapFilenamePath = Name of tmx file (relative to working directory) to load as a TiledMap asset.
     public static void loadMapAsset(String mapFilenamePath)
     {
         
@@ -261,6 +339,21 @@ public final class Utility
         } // Name of tmx file passed (neither null nor empty).
         
     }
+    
+    /**
+     * 
+     * The loadTextureAsset() method takes an image filename path relative to the
+     * working directory.  The method loads the image file into the asset manager
+     * as a Texture asset, blocking until finished.
+     * <br><br> 
+     * The Texture object will include the entire image, consisting of one to many
+     * different sprites.  In order to reference a specific sprite (for rendering), 
+     * TextureRegion can be used to get access to a subregion of the Texture object.
+     * <br><br> 
+     * Pairs with method, getTextureAsset().
+     * 
+     * @param textureFilenamePath  Filename of image to load into Texture asset.  Key of texture in asset manager.
+     */
     
     // textureFilenamePath = Filename of image to load into Texture asset.  Key of texture in asset manager.
     public static void loadTextureAsset(String textureFilenamePath)
@@ -317,6 +410,17 @@ public final class Utility
         
     }
     
+    /**
+     * 
+     * The unloadAsset() method is a helper method that takes advantage of the fact that
+     * there is one static instance of AssetManager for all game assets.  This method will
+     * check to see whether the asset is loaded, and if it is, then it will unload the asset from
+     * memory.
+     * 
+     * @param assetFilenamePath  Asset to unload from memory / the asset manager.
+     */
+    
+    // assetFilenamePath = Asset to unload from memory / the asset manager.
     public static void unloadAsset(String assetFilenamePath)
     {
         

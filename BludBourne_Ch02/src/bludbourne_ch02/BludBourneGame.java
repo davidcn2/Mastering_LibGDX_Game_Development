@@ -12,14 +12,16 @@ import screens.MainGameScreen;
 public class BludBourneGame extends BaseGame // Extends the BaseGame class.
 {
 
+    /**
+    * The class extends the basic functionality of a BaseGame class and creates a new GameScreen object
+    * with the BludBourne game.  The BludBourne game launches when the application starts.
+    * <br><br>
+    * MLGD (Mastering LibGDX Game Development): <br>
+    * The Game class is an abstract base class that wraps the ApplicationListener interface and delegates 
+    * the implementation of this interface to the Screen class.
+    */
+    
     /*
-    The class extends the basic functionality of a BaseGame class and creates a new GameScreen object
-    with the BludBourne game.  The BludBourne game launches when the application starts.
-    
-    MLGD (Mastering LibGDX Game Development):
-    The Game class is an abstract base class that wraps the ApplicationListener interface and delegates 
-    the implementation of this interface to the Screen class.
-    
     Methods include:
     
     create:  Sets up the skin and initializes and displays the title screen.
@@ -33,8 +35,20 @@ public class BludBourneGame extends BaseGame // Extends the BaseGame class.
     public static MainGameScreen _mainGameScreen;
     
     // Declare regular variables.
-    private final int windowWidth; // Width to use for stages.
-    private final int windowHeight; // Height to use for stages.
+    
+    /** Width to use for stages. */
+    private final int windowWidth;
+    
+    /** Height to use for stages. */
+    private final int windowHeight;
+    
+    /**
+     * 
+     * The constructor sets the values for the starting width and height of the application window.
+     * 
+     * @param windowWidth  Width to use for stages.
+     * @param windowHeight  Height to use for stages.
+     */
     
     // windowWidth = Width to use for stages.
     // windowHeight = Height to use for stages.
@@ -49,6 +63,10 @@ public class BludBourneGame extends BaseGame // Extends the BaseGame class.
         
     }
     
+    /**
+     * The function sets up the skin and initializes and displays the main game screen.<br>
+     * The function is automatically called by the superclass.
+     */
     @Override
     public void create() 
     {
@@ -71,12 +89,17 @@ public class BludBourneGame extends BaseGame // Extends the BaseGame class.
         
     }
     
+    /**
+     * The function occurs during the cleanup phase and clears objects from memory.<br>
+     * The function also disposes of additional LibGDX objects, such as those related to sounds and music.<br>
+     * The function also clears memory related to the asset manager.
+     */
     @Override
     public void dispose()
     {
 
         // The function occurs during the cleanup phase and clears objects from memory.
-        // The function also disposes of additional LibGDX ojects, such as those related to sounds and music.
+        // The function also disposes of additional LibGDX objects, such as those related to sounds and music.
         // The function also clears memory related to the asset manager.
         
         // Dispose objects in screens from memory.
@@ -99,6 +122,9 @@ public class BludBourneGame extends BaseGame // Extends the BaseGame class.
 
     }
     
+    /**
+     * The function disposes of LibGDX objects in screens.
+     */
     public void disposeScreens()
     {
         

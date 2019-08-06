@@ -2,6 +2,12 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group name="Mastering LibGDX Game Development"/>
+        <group name="Mastering LibGDX Game Development">
+            <file>file://Mac/Home/Documents/NetBeansProjects/Mastering%20LibGDX%20Game%20Development/BludBourne_Ch02/src/screens/MainGameScreen.java</file>
+            <file>file://Mac/Home/Documents/NetBeansProjects/Mastering%20LibGDX%20Game%20Development/BludBourne_Ch02/src/bludbourne_ch02/Utility.java</file>
+            <file>file://Mac/Home/Documents/NetBeansProjects/Mastering%20LibGDX%20Game%20Development/BludBourne_Ch02/src/bludbourne_ch02/PlayerController.java</file>
+            <file>file://Mac/Home/Documents/NetBeansProjects/Mastering%20LibGDX%20Game%20Development/BludBourne_Ch02/src/bludbourne_ch02/MapManager.java</file>
+            <file>file://Mac/Home/Documents/NetBeansProjects/Mastering%20LibGDX%20Game%20Development/BludBourne_Ch02/src/bludbourne_ch02/Entity.java</file>
+        </group>
     </open-files>
 </project-private>

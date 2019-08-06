@@ -45,19 +45,30 @@ ArrayList supports dynamic arrays that can grow as needed.
 
 public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class.
     
+    /**
+    * The class extends the basic functionality of a BaseScreen class and sets up the main game screen.
+    * The MainGameScreen will act as the primary gameplay screen that displays the different maps and 
+    * the player character moving around in them.  The MainGameScreen class represents the main gameplay 
+    * screen used to display the game map, player avatar, and any UI components.
+    * <br>
+    * <br>1.  Initialization occurs in the constructor.
+    * <br>2.  The first appearance of the screen (and upon becoming current) cause the execution of the function, 
+    *     show().
+    * <br>3.  The show() function sets up the viewport, camera, orthogonal tile map renderer, player, and controller.
+    * <br>4.  During the first appearance of the screen, the reference of the show() function to 
+    *     mapMgr.getCurrentMap() causes the default map to load via loadMap().
+    * <br>3.  The main game logic occurs through the render() function. 
+    */
+    
     /*
-    The class extends the basic functionality of a BaseScreen class and sets up the main game screen.
-    The MainGameScreen will act as the primary gameplay screen that displays the different maps and 
-    the player character moving around in them.  The MainGameScreen class represents the main gameplay 
-    screen used to display the game map, player avatar, and any UI components.
-
-    1.  Initialization occurs in the constructor.
-    2.  The first appearance of the screen (and upon becoming current) cause the execution of the function, 
-        show().
-    3.  The show() function sets up the viewport, camera, orthogonal tile map renderer, player, and controller.
-    4.  During the first appearance of the screen, the reference of the show() function to 
-        mapMgr.getCurrentMap() causes the default map to load via loadMap().
-    3.  The main game logic occurs through the render() function. 
+    Important Objects:
+    
+    TiledMap:  Store the data from the tilemap file, which is loaded using a static method from the 
+      TmxMapLoader class.
+    OrthogonalTileMapRenderer:  Used to draw the contents of the various layers of the tilemap.
+      The layers to be rendered are specified by an array of integers.
+    OrthographicCamera:  Used to determine which region of a tilemap layer should be rendered, 
+      analogous to the role of the Camera object that belongs to each Stage.
     
     Methods include:
 
@@ -84,13 +95,43 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
     private static final String TAG = MainGameScreen.class.getSimpleName(); // Class name.
 
     // Declare object variables.
+    
+    /** Camera to use with Tiled map. */
     private OrthographicCamera _camera;
-    private PlayerController _controller; // Reference to the player input class.
+    
+    /** Reference to the player input class. */
+    private PlayerController _controller;
+    
+    /** Sprite for the player actually drawn on map.  Contains current animation frame.  
+     * Updated in setDirection() method in Entity. */
     private TextureRegion _currentPlayerFrame;
+    
+    /** Sprite for the player, used only for positional details.  Contains only first animation frame. */
     private Sprite _currentPlayerSprite;
-    private static MapManager _mapMgr; // Reference to the map manager class.
+    
+    /** Reference to the map manager class. */
+    private static MapManager _mapMgr;
+    
+    /** Renderer to use with Tiled map. */
     private OrthogonalTiledMapRenderer _mapRenderer;
-    private static Entity _player; // Reference to the entity class for the player.
+    
+    /** Reference to the entity class for the player. */
+    private static Entity _player;
+    
+    /**
+     * 
+     * The constructor calls the BaseScreen constructor, sets defaults, and initializes the map manager.
+     *   
+     * Initializing the map manager involves:
+     *   
+     * <br>1.  Initializes variables.
+     * <br>2.  Populates hash maps with relative paths of TiledMap files.
+     * <br>3.  Copies base starting location of player (0, 0) to related hash maps for each TiledMap.
+     * 
+     * @param g  Reference to base game.
+     * @param windowWidth  Width to use for stages.
+     * @param windowHeight  Height to use for stages.
+     */
     
     // g = Reference to base game.
     // windowWidth = Width to use for stages.
@@ -127,30 +168,57 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
     class can be referenced without an object.
     */
     
+    /**
+     * The inner class stores display dimension related information.
+     */
     private static class VIEWPORT 
     {
         
         // The inner class stores display dimension related information.
         
         // Declare regular variables.
-        static float viewportWidth; // Adjusted number of tiles to display across, centered on player.
-        static float viewportHeight; // Adjusted number of tiles to display vertically, centered on player.
-        static float virtualWidth; // (Base) number of tiles to display across, centered on player.
-        static float virtualHeight; // (Base) number of tiles to display vertically, centered on player.
-        static float physicalWidth; // Width of application window.
-        static float physicalHeight; // Height of application window.
-        static float aspectRatio; // Aspect ratio (width to height), using base tile counts.
+        
+        /** Adjusted number of tiles to display across, centered on player. */
+        static float viewportWidth;
+        
+        /** Adjusted number of tiles to display vertically, centered on player. */
+        static float viewportHeight;
+        
+        /** (Base) number of tiles to display across, centered on player. */
+        static float virtualWidth;
+        
+        /** (Base) number of tiles to display vertically, centered on player. */
+        static float virtualHeight;
+        
+        /** Width of application window. */
+        static float physicalWidth;
+        
+        /** Height of application window. */
+        static float physicalHeight;
+        
+        /** Aspect ratio (width to height), using base tile counts. */
+        static float aspectRatio;
         
     }
 	
     // Methods below...
     
+    /**
+     * The method gets called when the screen becomes the current one for a Game.  The method sets up the
+     * viewport, camera, orthogonal tile map renderer, player, and controller.
+     * <br><br>
+     * Whenever a new screen is set with the Game class, the hide() method will be called on the current 
+     * screen, and a show() method will be called on the new screen.
+     * <br><br>
+     * During the first appearance of the screen, the reference of the show() function to 
+     * mapMgr.getCurrentMap() causes the default map to load via loadMap().
+     */
     @Override
     public void show()
     {
 		
         /*
-        The method gets called when the screen becomes the current one for a Game.  The method sets up the 
+        The method gets called when the screen becomes the current one for a Game.  The method sets up the
         viewport, camera, orthogonal tile map renderer, player, and controller.
         
         Whenever a new screen is set with the Game class, the hide() method will be called on the current 
@@ -208,13 +276,31 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
         // Set next position to same value.
         _player.init(_mapMgr.getPlayerStartUnitScaled().x, _mapMgr.getPlayerStartUnitScaled().y);
         
+        // Initialize player positional sprite (vs current animation).
         _currentPlayerSprite = _player.getFrameSprite();
 
+        // Initialize player input object.
         _controller = new PlayerController(_player);
+        
+        // Configure to process all input events with an InputProcessor.
         Gdx.input.setInputProcessor(_controller);
     
     }
 
+    /**
+     * 
+     * The render() method will be called every frame, and is the primary location for rendering, 
+     * updating, and checking for collisions in the game lifecycle.  First, lock the viewport 
+     * (camera location) to the current position of the player character.  Locking ensures that
+     * the player is always in the middle of the screen.  Then, check whether the player has 
+     * activated a portal, which will be handled with the MapManager class.  Also, check for 
+     * collisions with the related layer of the map.  If any collisions occur, then do not update
+     * the position of the player.  Update the camera information in the OrthogonalTiledMapRenderer 
+     * object and then render the TiledMap object first (due to ordering requirements).
+     * 
+     * @param delta  Time span between the current and last frame in seconds.  Passed / populated automatically.
+     */
+    
     // delta = Time span between the current and last frame in seconds.  Passed / populated automatically.
     @Override
     public void render(float delta)
@@ -243,20 +329,37 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
         // Recalculate the projection and view matrix of the camera.
         _camera.update();
 
+        // Adjust frame time to smooth animation.
+        // Reduce player hitbox height to half for a better feel.
         _player.update(delta);
+        
+        // Get current animation frame for player.
         _currentPlayerFrame = _player.getFrame();
         
+        // Determine whether a collision occurs with the player hitbox and an object in the portal 
+        // collision layer of the current map.  When a collision occurs, move the player to the 
+        // starting position in the target map.
         updatePortalLayerActivation(_player.boundingBox);
 
-        if( !isCollisionWithMapLayer(_player.boundingBox) ){
-                _player.setNextPositionToCurrent();
-        }
+        // If player hitbox NOT intersecting object in collision map layer, then...
+        if( !isCollisionWithMapLayer(_player.boundingBox) )
+            {
+            // Player hitbox NOT intersecting object in collision map layer.
+                
+            // Sets the current player position to the next.
+            _player.setNextPositionToCurrent();
+            }
+        
+        // Process cached input (keyboard and mouse).
         _controller.update(delta);
 
         //_mapRenderer.getBatch().enableBlending();
         //_mapRenderer.getBatch().setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
+        // Sets the projection matrix for rendering, as well as the bounds of the map which should be rendered.
         _mapRenderer.setView(_camera);
+        
+        // Render the map.
         _mapRenderer.render();
 
         /*
@@ -264,6 +367,9 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
         objects exist to update. By drawing in a batch update, the overhead of updating the textures 
         will be minimal, since the GPU will consume the texture updates at one time.  The alternative
         involves constantly throttling between updating and rendering separate textures.
+        
+        The setDirection() method in the Entity class, called whenever processing input / movement, 
+        determines which animation frame to display.
         */
         
         // Set up batch for drawing.
@@ -297,19 +403,58 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
     }
     */
 
+    /**
+     * The method clears LibGDX resources from memory and disables the input processor.
+     */
     @Override
     public void dispose()
     {
         
-        // The method clears LibGDX resources from memory.
+        // The method clears LibGDX resources from memory and disables the input processor.
         
-        _player.dispose();
-        _controller.dispose();
-        Gdx.input.setInputProcessor(null);
-        _mapRenderer.dispose();
+        _player.dispose(); // Clear the texture associated with the player from memory.
+        _controller.dispose(); // Clear resources associated with the input processor from memory.
+        _mapRenderer.dispose(); // Clear TiledMap renderer from memory.
+        
+        Gdx.input.setInputProcessor(null); // Disable input processor.
         
     }
 
+    /**
+     * 
+     * The setupViewport() method helps with the bookkeeping of the inner class, VIEWPORT.
+     * VIEWPORT acts simply as a convenience class for maintaining all the parameters
+     * that compose the viewport for the camera.  The class will also account for the
+     * skewing that can occur depending on the width to height ratio, updating the values
+     * accordingly.
+     * <br><br>
+     * The method computes the number of tiles to display in the application window (viewport).
+     * The virtual width corresponds to the number to display across the screen, centered on the player.
+     * The virtual height corresponds to the number to display vertically on the screen, centered on the player.
+     * The aspect ratio will adjust one of the base numbers passed to the method (viewport width or height).
+     * <br><br>
+     * Example:
+     * Parameters ... width = 10, height = 10.
+     * <br>
+     * <br>1.  Starts with 5 tiles shown to the left of the player, 5 tiles shown to the right.
+     * <br>2.  Starts with 5 tiles shown above the player, 5 tiles shown below.
+     * <br><br>
+     * Now, calculate aspect ratio adjustments.
+     * <br><br>  
+     * Viewport dimensions of 10 x 10.
+     * (10, 10) = 10 / 10 = 1.000 aspect ratio.
+     * <br><br>  
+     * Assume physical application window dimensions of 800 x 600.
+     * (800, 600) = 800 / 600 = 1.333 aspect ratio.
+     * <br><br>  
+     * Since physical aspect ratio exceeds viewport, adjust viewport width.  Viewport height remains the same.
+     * Adjusted width = viewport height (10) x physical aspect ratio (1.333) = 10 x 1.333 = 13.33.
+     * Height = 10.00.
+     * 
+     * @param width  (Base) number of tiles to display across, centered on player.  Aspect ratio may adjust.
+     * @param height  (Base) number of tiles to display vertically, centered on player.  Aspect ratio may adjust.
+     */
+    
     // width = (Base) number of tiles to display across, centered on player.  Aspect ratio may adjust.
     // height = (Base) number of tiles to display vertically, centered on player.  Aspect ratio may adjust.
     private void setupViewport(int width, int height)
@@ -402,6 +547,21 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
     
     }
 
+    /**
+     * 
+     * The method returns whether a collision occurs with the player hitbox and an 
+     * object in the collision layer of the current map, excluding portals.
+     * <br><br> 
+     * The isCollisionWithMapLayer() method is called for every frame in the render()
+     * method with the bounding box of the player character passed.  The bounding box 
+     * acts as the rectangle that defines the hitbox of the player.  The method tests
+     * the player hitbox against all rectangle objects on the collision layer of the 
+     * TiledMap map.  If any of the rectangles overlap, then a collision occurred.
+     * 
+     * @param boundingBox  Rectangle that defines the hitbox of the player.
+     * @return  Whether a collision occurs with the player hitbox.
+     */
+    
     // boundingBox = Rectangle that defines the hitbox of the player.
     private boolean isCollisionWithMapLayer(Rectangle boundingBox)
     {
@@ -487,6 +647,32 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
         
     }
 
+    /**
+     * 
+     * The method returns whether a collision occurs with the player hitbox and an 
+     * object in the portal collision layer of the current map.  When a collision
+     * occurs, the method moves the player to the starting position in the target map.
+     * <br><br> 
+     * The updatePortalLayerActivation() method checks for collisions between portal 
+     * objects and the player hitbox.  If a player walks over these special areas on 
+     * the map, then an event will be triggered.  When portal activation occurs, the
+     * method first caches the closest player spawn in the MapManager class.  The
+     * caching helps during the transition from the old to the new location.  Then, 
+     * the method loads the new map designated by the portal activation name, resetting
+     * the player position, and setting the new map to be rendered in the next frame.
+     * <br><br>
+     * Summary of starting location logic:
+     * <br>1.  Caches (stores) location in current map of closest spawn point, relative to
+     * player position.
+     * <br>2.  If new map not visited before, sets starting location to closest spawn point
+     * to (0, 0).
+     * <br>3.  If new map visited before, uses location stored in _playerStartLocationTable.
+     * 
+     * @param boundingBox  Rectangle that defines the hitbox of the player.
+     * @return  Whether a collision occurs with the player hitbox and a portal.
+     */
+    
+    // boundingBox = Rectangle that defines the hitbox of the player.
     private boolean updatePortalLayerActivation(Rectangle boundingBox)
     {
     
@@ -506,7 +692,7 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
         Summary of starting location logic:
         1.  Caches (stores) location in current map of closest spawn point, relative to
         player position.
-        2.  If new map not visited before, sets starting location to cloest spawn point
+        2.  If new map not visited before, sets starting location to closest spawn point
         to (0, 0).
         3.  If new map visited before, uses location stored in _playerStartLocationTable.
         
@@ -620,13 +806,21 @@ public class MainGameScreen extends BaseScreen { // Extends the BaseScreen class
             
     }
     
+    /**
+     * 
+     * The function occurs during the update phase (render method) and currently merely exists to override
+     * the similarly named function in the BaseScreen parent class.
+     * 
+     * @param dt  Time span between the current and last frame in seconds.  Passed / populated automatically.
+     */
+    
     // dt = Time span between the current and last frame in seconds.  Passed / populated automatically.
     @Override
     public void update(float dt) 
-    {   
+    {
         
         /*
-        The function occurs during the update phase (render method) and currently merely exists to override 
+        The function occurs during the update phase (render method) and currently merely exists to override
         the similarly named function in the BaseScreen parent class.
         */
             

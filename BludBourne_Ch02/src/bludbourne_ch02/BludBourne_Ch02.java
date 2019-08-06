@@ -9,40 +9,48 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 public class BludBourne_Ch02 
 {
     
-    /*
-    The class contains the entry / starting point for the application.
-    
-    The LwjglApplication class will bootstrap itself with the starter class instance and the 
-    configuration passed into its constructor.  The LwjglApplication constructor will instantiate the 
-    various subsystem modules used in LibGDX, populating the Gdx (com.badlogic.gdx) environment class 
-    with static instances of the Application, Graphics, Audio, Input, Files, and Net modules.  The 
-    LwjglApplication constructor will then spawn a thread, acting as the main loop, that will run until 
-    the game exits.  The main loop thread represents the lifecycle of the game.
-    
-    The Application class holds responsibility for setting up a window, handling resize events, rendering 
-    to the surfaces, and managing the application during its lifetime.  Specifically, Application will 
-    provide the modules for dealing with graphics, audio, input and file IO handling, logging facilities, 
-    memory footprint information, and hooks for extension libraries.
-
-    The LwjglApplication class acts as the backend implementation of the Application interface.  The 
-    backend package that LibGDX uses for the desktop is called LWJGL.  The interface becomes the entry point 
-    that the platform OS uses to load the game.  The LwjglApplicationConfiguration class provides a single 
-    point of reference for all the properties associates with the game on the desktop.
-    
-    Per Mastering LibGDX Game Development, ...
-    "The Application class is responsible for setting up a window, handling resize events, rendering to 
-    the surfaces, and managing the application during its lifetime.  Specifically, Application will 
-    provide the modules for dealing with graphics, audio, input and file I/O handling, logging facilities, 
-    memory footprint information, and hooks for extension libraries.
-    
-    The Gdx class is an environment class that holds static instances of the Application, Graphics, Audio, 
-    Input, Files, and Net modules as a convenience for access throughout the game.  The LwjglApplication 
-    class is the backend implementation of the Application interface for the desktop.  The backend package 
-    that LibGDX uses for the desktop is called LWJGL.  This implementation for the desktop will provide 
-    cross-platform access to native APIs for OpenGL.  This interface becomes the entry point that the
-    platform OS uses to load your game.
+    /**
+    * The class contains the entry / starting point for the application.
+    * <br><br>
+    * The LwjglApplication class will bootstrap itself with the starter class instance and the 
+    * configuration passed into its constructor.  The LwjglApplication constructor will instantiate the 
+    * various subsystem modules used in LibGDX, populating the Gdx (com.badlogic.gdx) environment class 
+    * with static instances of the Application, Graphics, Audio, Input, Files, and Net modules.  The 
+    * LwjglApplication constructor will then spawn a thread, acting as the main loop, that will run until 
+    * the game exits.  The main loop thread represents the lifecycle of the game.
+    * <br><br>
+    * The Application class holds responsibility for setting up a window, handling resize events, rendering 
+    * to the surfaces, and managing the application during its lifetime.  Specifically, Application will 
+    * provide the modules for dealing with graphics, audio, input and file IO handling, logging facilities, 
+    * memory footprint information, and hooks for extension libraries.
+    * <br><br>
+    * The LwjglApplication class acts as the backend implementation of the Application interface.  The 
+    * backend package that LibGDX uses for the desktop is called LWJGL.  The interface becomes the entry point 
+    * that the platform OS uses to load the game.  The LwjglApplicationConfiguration class provides a single 
+    * point of reference for all the properties associates with the game on the desktop.
+    * <br><br>
+    * Per Mastering LibGDX Game Development, ...<br>
+    * "The Application class is responsible for setting up a window, handling resize events, rendering to 
+    * the surfaces, and managing the application during its lifetime.  Specifically, Application will 
+    * provide the modules for dealing with graphics, audio, input and file I/O handling, logging facilities, 
+    * memory footprint information, and hooks for extension libraries.
+    * <br><br>
+    * The Gdx class is an environment class that holds static instances of the Application, Graphics, Audio, 
+    * Input, Files, and Net modules as a convenience for access throughout the game.  The LwjglApplication 
+    * class is the backend implementation of the Application interface for the desktop.  The backend package 
+    * that LibGDX uses for the desktop is called LWJGL.  This implementation for the desktop will provide 
+    * cross-platform access to native APIs for OpenGL.  This interface becomes the entry point that the
+    * platform OS uses to load your game.
     */
 
+    /**
+     * 
+     * The function configures and launches the application.
+     * 
+     * @param args  Command-line arguments as an array of String objects.
+     */
+    
+    // args = Command-line arguments as an array of String objects.
     public static void main(String[] args) 
     {
         
